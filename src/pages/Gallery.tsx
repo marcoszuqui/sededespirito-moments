@@ -113,6 +113,51 @@ const Gallery = () => {
     setSearchQuery("");
   };
 
+  const handleDownload = async (photo: any) => {
+    try {
+      // Extrair path do arquivo da URL completa
+      const urlParts = photo.url.split('/public/baptism-photos/');
+      if (!urlParts[1]) {
+        throw new Error("URL inválida");
+      }
+      const filePath = urlParts[1];
+      
+      // Baixar do storage com SDK (garante qualidade original)
+      const { data, error } = await supabase.storage
+        .from('baptism-photos')
+        .download(filePath);
+      
+      if (error) throw error;
+      
+      // Criar URL temporária do blob
+      const url = URL.createObjectURL(data);
+      
+      // Criar link e forçar download
+      const link = document.createElement('a');
+      link.href = url;
+      const fileExtension = filePath.split('.').pop() || 'jpg';
+      link.download = `batismo-${photo.id || 'foto'}.${fileExtension}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Limpar URL temporária
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download iniciado!",
+        description: "A foto está sendo baixada em qualidade original"
+      });
+    } catch (error) {
+      console.error('Erro ao baixar:', error);
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível baixar a foto",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -199,7 +244,7 @@ const Gallery = () => {
                 onClick={() => setSelectedPhoto(photo)}
               >
                 <img
-                  src={photo.url}
+                  src={`${photo.url}?width=600&quality=85`}
                   alt={photo.description || "Foto do batismo"}
                   className="h-full w-full object-cover transition-transform group-hover:scale-110"
                 />
@@ -255,12 +300,7 @@ const Gallery = () => {
                     size="sm" 
                     variant="outline"
                     className="border-primary text-primary hover:bg-primary hover:text-white"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = selectedPhoto.url;
-                      link.download = `batismo-${selectedPhoto.id}.jpg`;
-                      link.click();
-                    }}
+                    onClick={() => handleDownload(selectedPhoto)}
                   >
                     <Download className="mr-2 h-4 w-4" />
                     Baixar

@@ -29,13 +29,43 @@ export default function AdminUpload() {
   const navigate = useNavigate();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const newPhotos: PhotoUpload[] = files.map(file => ({
+    if (!e.target.files) return;
+    
+    const files = Array.from(e.target.files);
+    
+    // Validar tipos de arquivo
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif', 'image/webp'];
+    const maxSize = 52428800; // 50MB
+    
+    const validFiles = files.filter(file => {
+      if (!validTypes.includes(file.type)) {
+        toast({
+          title: "Tipo de arquivo inválido",
+          description: `${file.name} não é uma imagem válida`,
+          variant: "destructive"
+        });
+        return false;
+      }
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "Arquivo muito grande",
+          description: `${file.name} excede 50MB`,
+          variant: "destructive"
+        });
+        return false;
+      }
+      
+      return true;
+    });
+    
+    const newPhotos = validFiles.map(file => ({
       file,
       preview: URL.createObjectURL(file),
-      status: 'pending',
-      progress: 0,
+      status: 'pending' as const,
+      progress: 0
     }));
+    
     setPhotos(prev => [...prev, ...newPhotos]);
   };
 
@@ -250,11 +280,16 @@ export default function AdminUpload() {
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {photos.map((photo, index) => (
                       <div key={index} className="relative group">
-                        <img
-                          src={photo.preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-40 object-cover rounded-lg"
-                        />
+                        <div className="relative">
+                          <img
+                            src={photo.preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-40 object-cover rounded-lg"
+                          />
+                          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                            {(photo.file.size / 1024 / 1024).toFixed(1)} MB
+                          </div>
+                        </div>
                         {photo.status !== 'complete' && photo.status !== 'error' && !uploading && (
                           <Button
                             variant="destructive"
