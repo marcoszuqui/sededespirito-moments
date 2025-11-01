@@ -44,7 +44,14 @@ serve(async (req) => {
             content: [
               {
                 type: "text",
-                text: "Analise esta imagem e descreva: 1) As pessoas (quantas, expressões, roupas) 2) O ambiente e cenário 3) A ocasião/evento 4) Cores predominantes 5) Elementos religiosos se houver. Seja detalhado e objetivo.",
+                text: `Você é um assistente que analisa imagens de batismos. Descreva esta imagem em detalhes, focando PRINCIPALMENTE em:
+- ROSTOS: características faciais, expressões, idades aproximadas, gênero
+- Pessoas presentes (roupas, posições, gestos)
+- Ambiente (igreja, decoração, iluminação)
+- Momento capturado (cerimônia, celebração, pose)
+- Elementos religiosos visíveis
+
+Seja MUITO detalhado sobre os rostos e pessoas para permitir busca por similaridade facial.`,
               },
               {
                 type: "image_url",
@@ -99,11 +106,16 @@ serve(async (req) => {
     }
 
     // Use AI to rank photos by similarity
-    const rankingPrompt = `Dada esta descrição de uma imagem: "${imageDescription}"
+    const rankingPrompt = `Baseado na seguinte descrição de uma imagem procurada:
 
-Compare com estas fotos e retorne os IDs das 6 fotos mais similares, ordenadas por relevância (mais similar primeiro):
+"${imageDescription}"
 
+E nas seguintes fotos disponíveis no banco de dados:
 ${photos.map((p, i) => `${i}. ID: ${p.id} - ${p.description || "Sem descrição"} - Tags: ${p.tags?.join(", ") || "Sem tags"}`).join("\n")}
+
+Ranqueie os IDs das fotos por ordem de similaridade com a imagem procurada.
+PRIORIZE FORTEMENTE a similaridade de ROSTOS e PESSOAS (características faciais, expressões, idades, gênero).
+Considere também: ambiente, momento, elementos visuais, e contexto geral.
 
 Retorne APENAS os IDs das fotos mais similares, separados por vírgula. Exemplo: uuid1,uuid2,uuid3`;
 
