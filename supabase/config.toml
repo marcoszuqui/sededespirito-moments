@@ -1,1 +1,4 @@
 project_id = "esmjkhbljmuqzqazspdg"
+
+[functions.search-by-image]
+verify_jwt = false
