@@ -7,9 +7,13 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Gallery from "./pages/Gallery";
+import EventView from "./pages/EventView";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminUpload from "./pages/admin/Upload";
+import AdminEvents from "./pages/admin/Events";
+import AdminEventNew from "./pages/admin/EventNew";
+import AdminEventMedia from "./pages/admin/EventMedia";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/galeria" element={<Gallery />} />
+            <Route path="/galeria/eventos/:id" element={<EventView />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route 
@@ -31,6 +36,30 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminUpload />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/events" 
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminEvents />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/events/new" 
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminEventNew />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/events/:id/media" 
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminEventMedia />
                 </ProtectedRoute>
               } 
             />

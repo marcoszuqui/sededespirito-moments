@@ -14,15 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          event_date: string
+          id: string
+          location: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          event_date: string
+          id?: string
+          location?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          event_date?: string
+          id?: string
+          location?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       photos: {
         Row: {
           ai_description: string | null
           description: string | null
+          duration: number | null
           event_date: string | null
+          event_id: string | null
           faces_count: number | null
+          file_size: number | null
           id: string
+          media_type: string | null
+          order_index: number | null
           setting: string | null
           tags: string[] | null
+          thumbnail_url: string | null
           uploaded_at: string | null
           uploaded_by: string | null
           url: string
@@ -30,11 +72,17 @@ export type Database = {
         Insert: {
           ai_description?: string | null
           description?: string | null
+          duration?: number | null
           event_date?: string | null
+          event_id?: string | null
           faces_count?: number | null
+          file_size?: number | null
           id?: string
+          media_type?: string | null
+          order_index?: number | null
           setting?: string | null
           tags?: string[] | null
+          thumbnail_url?: string | null
           uploaded_at?: string | null
           uploaded_by?: string | null
           url: string
@@ -42,16 +90,30 @@ export type Database = {
         Update: {
           ai_description?: string | null
           description?: string | null
+          duration?: number | null
           event_date?: string | null
+          event_id?: string | null
           faces_count?: number | null
+          file_size?: number | null
           id?: string
+          media_type?: string | null
+          order_index?: number | null
           setting?: string | null
           tags?: string[] | null
+          thumbnail_url?: string | null
           uploaded_at?: string | null
           uploaded_by?: string | null
           url?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "photos_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
